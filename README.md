@@ -1,16 +1,16 @@
 # Plantes indicatrices - Morilles
 
-Jeu interactif de reconnaissance des plantes indicatrices de sol calcaire associees aux morilles.
+Jeu interactif de reconnaissance des plantes indicatrices de sol calcaire associées aux morilles.
 
-100 plantes reparties en 4 niveaux de difficulte :
-- **Debutant** (25 plantes) - les classiques du sous-bois calcaire
-- **Connaisseur** (50 plantes) - especes moins evidentes
-- **Avance** (75 plantes) - arbustes, haies et prairies
-- **Expert** (100 plantes) - pelouses seches et orchidees
+100 plantes réparties en 4 niveaux de difficulté :
+- **Débutant** (25 plantes) - les classiques du sous-bois calcaire
+- **Connaisseur** (50 plantes) - espèces moins évidentes
+- **Avancé** (75 plantes) - arbustes, haies et prairies
+- **Expert** (100 plantes) - pelouses sèches et orchidées
 
 Deux modes de jeu :
-- **QCM** - 4 choix, feedback immediat
-- **Flashcards** - memorisation avec animation flip 3D
+- **QCM** - 4 choix, feedback immédiat
+- **Flashcards** - mémorisation avec animation flip 3D
 
 ## Stack
 
@@ -26,5 +26,5 @@ npm run dev
 
 ## Ajouter une plante
 
-1. Deposer l'image dans `game/public/images/` (nom ASCII)
-2. Ajouter une entree dans `src/data/plants.js`
+1. Déposer l'image dans `game/public/images/` (nom ASCII)
+2. Ajouter une entrée dans `src/data/plants.js`
