@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { useQuiz } from '../composables/useQuiz.js'
 import PlantImage from './PlantImage.vue'
 import ScoreBoard from './ScoreBoard.vue'
+import SoilBadge from './SoilBadge.vue'
 
 const props = defineProps({
   difficulty: { type: String, required: true },
@@ -65,7 +66,7 @@ function choiceClass(choice) {
           :disabled="answered"
           @click="answer(choice)"
         >
-          <span class="choice-name">{{ choice.name }}</span>
+          <span class="choice-name">{{ choice.name }} <SoilBadge :soil="choice.soil" /></span>
           <span class="choice-latin"><em>{{ choice.latin }}</em></span>
         </button>
       </div>

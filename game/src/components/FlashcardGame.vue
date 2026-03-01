@@ -2,6 +2,7 @@
 import { onMounted } from 'vue'
 import { useFlashcard } from '../composables/useFlashcard.js'
 import ScoreBoard from './ScoreBoard.vue'
+import SoilBadge from './SoilBadge.vue'
 
 const props = defineProps({
   difficulty: { type: String, required: true },
@@ -53,6 +54,7 @@ onMounted(start)
             <div v-if="revealed" class="card-answer">
               <p class="plant-name">{{ currentPlant.name }}</p>
               <p class="plant-latin"><em>{{ currentPlant.latin }}</em></p>
+              <SoilBadge :soil="currentPlant.soil" class="card-soil" />
             </div>
           </div>
         </div>
@@ -166,9 +168,14 @@ onMounted(start)
   color: var(--color-text-light);
 }
 
+.card-soil {
+  margin-top: 0.4rem;
+}
+
 .eval-buttons {
   display: flex;
   gap: 0.75rem;
+  margin-top: 4rem;
 }
 
 .btn-eval {

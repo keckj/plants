@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { difficulties, getPlants } from '../data/plants.js'
+import { difficulties, getPlants, soilTypes } from '../data/plants.js'
 
 const emit = defineEmits(['start'])
 
@@ -36,6 +36,13 @@ function play(mode) {
         </button>
       </div>
       <p class="plant-count">{{ plantCount }} plantes à découvrir</p>
+    </div>
+
+    <div class="soil-legend">
+      <span v-for="(info, key) in soilTypes" :key="key" class="legend-item">
+        <span class="legend-dot" :style="{ background: info.color }"></span>
+        {{ info.label }}
+      </span>
     </div>
 
     <div class="modes">
@@ -112,6 +119,29 @@ h1 {
 .plant-count {
   color: var(--color-text-light);
   font-size: 0.9rem;
+}
+
+.soil-legend {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .modes {

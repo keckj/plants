@@ -1,4 +1,6 @@
 <script setup>
+import SoilBadge from './SoilBadge.vue'
+
 defineProps({
   correct: { type: Number, required: true },
   total: { type: Number, required: true },
@@ -27,7 +29,7 @@ defineEmits(['back'])
         <template v-else>Courage, recommencez pour progresser !</template>
       </div>
       <div v-if="failedPlants.length > 0" class="failed-section">
-        <h3>Plantes a revoir</h3>
+        <h3>Plantes à revoir</h3>
         <div class="failed-list">
           <div v-for="plant in failedPlants" :key="plant.id" class="failed-item">
             <div class="thumb-wrap">
@@ -35,14 +37,14 @@ defineEmits(['back'])
               <img :src="plant.image" :alt="plant.name" class="failed-preview" />
             </div>
             <div class="failed-info">
-              <span class="failed-name">{{ plant.name }}</span>
+              <span class="failed-name">{{ plant.name }} <SoilBadge :soil="plant.soil" /></span>
               <span class="failed-latin"><em>{{ plant.latin }}</em></span>
             </div>
           </div>
         </div>
       </div>
 
-      <button class="btn-primary" @click="$emit('back')">Retour a l'accueil</button>
+      <button class="btn-primary" @click="$emit('back')">Retour à l'accueil</button>
     </template>
   </div>
 </template>
