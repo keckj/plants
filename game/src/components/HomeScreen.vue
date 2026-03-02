@@ -39,7 +39,7 @@ function play(mode) {
     </div>
 
     <div class="soil-legend">
-      <span v-for="(info, key) in soilTypes" :key="key" class="legend-item">
+      <span v-for="(info, key) in soilTypes" :key="key" class="legend-item" :title="info.definition">
         <span class="legend-dot" :style="{ background: info.color }"></span>
         {{ info.label }}
       </span>

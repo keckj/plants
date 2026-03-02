@@ -1,8 +1,8 @@
 export const soilTypes = {
-  basique: { label: 'Calcicole', color: '#3498db' },
-  acide: { label: 'Acidophile', color: '#e74c3c' },
-  neutre: { label: 'Neutrophile', color: '#95a5a6' },
-  ubiquiste: { label: 'Ubiquiste', color: '#9b59b6' },
+  basique: { label: 'Calcicole', color: '#3498db', definition: 'Pousse sur sol calcaire (basique). Excellent indicateur de morilles !' },
+  acide: { label: 'Acidophile', color: '#e74c3c', definition: 'Pousse sur sol acide. Mauvais signe pour les morilles, qui préfèrent le calcaire.' },
+  neutre: { label: 'Neutrophile', color: '#95a5a6', definition: 'Pousse sur sol neutre. Compatible avec les morilles, sans garantie.' },
+  ubiquiste: { label: 'Ubiquiste', color: '#9b59b6', definition: 'Pousse sur tout type de sol. Ne renseigne pas sur la présence de morilles.' },
 }
 
 export const plants = [
