@@ -19,8 +19,8 @@ function play(mode) {
 
 <template>
   <div class="home">
-    <h1>Plantes calcicoles</h1>
-    <p class="subtitle">Apprenez à reconnaître les plantes indicatrices de sol calcaire</p>
+    <h1>Plantes indicatrices</h1>
+    <p class="subtitle">Apprenez à reconnaître les plantes indicatrices de morilles</p>
 
     <div class="difficulty">
       <p class="section-label">Niveau</p>
