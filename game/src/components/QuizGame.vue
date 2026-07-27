@@ -1,34 +1,40 @@
 <script setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useQuiz } from '../composables/useQuiz.js'
+import { getDomain, itemDetails } from '../data/domains.js'
 import PlantImage from './PlantImage.vue'
 import ScoreBoard from './ScoreBoard.vue'
-import SoilBadge from './SoilBadge.vue'
+import TraitBadge from './TraitBadge.vue'
 
 const props = defineProps({
+  domain: { type: String, required: true },
   difficulty: { type: String, required: true },
 })
 const emit = defineEmits(['back'])
+
+const domain = getDomain(props.domain)
 
 const {
   correct,
   total,
   percentage,
-  currentPlant,
+  currentItem,
   currentIndex,
   choices,
   selected,
   answered,
   finished,
   lastCorrect,
-  failedPlants,
+  failedItems,
   start,
   answer: rawAnswer,
   next,
-  plantCount,
-} = useQuiz(props.difficulty)
+  itemCount,
+} = useQuiz(domain.getItems(props.difficulty))
 
 onMounted(start)
+
+const currentDetails = computed(() => itemDetails(domain, currentItem.value))
 
 function answer(choice) {
   rawAnswer(choice)
@@ -39,7 +45,7 @@ function answer(choice) {
 
 function choiceClass(choice) {
   if (!answered.value) return 'btn-choice'
-  if (choice.id === currentPlant.value.id) return 'btn-choice choice-correct'
+  if (choice.id === currentItem.value.id) return 'btn-choice choice-correct'
   if (choice.id === selected.value) return 'btn-choice choice-wrong'
   return 'btn-choice choice-dim'
 }
@@ -49,14 +55,14 @@ function choiceClass(choice) {
   <div class="quiz">
     <header v-if="!finished" class="quiz-header">
       <button class="btn-secondary btn-small" @click="emit('back')">Quitter</button>
-      <span class="progress">{{ currentIndex + 1 }} / {{ plantCount }}</span>
+      <span class="progress">{{ currentIndex + 1 }} / {{ itemCount }}</span>
       <ScoreBoard :correct="correct" :total="total" :percentage="percentage" />
     </header>
 
-    <template v-if="!finished && currentPlant">
-      <PlantImage :src="currentPlant.image" :alt="'Photo de ' + currentPlant.name" />
+    <template v-if="!finished && currentItem">
+      <PlantImage :src="currentItem.image" :alt="'Photo de ' + currentItem.name" :href="currentItem.source" />
 
-      <p class="question">Quelle est cette plante ?</p>
+      <p class="question">{{ domain.question }}</p>
 
       <div class="choices">
         <button
@@ -66,9 +72,15 @@ function choiceClass(choice) {
           :disabled="answered"
           @click="answer(choice)"
         >
-          <span class="choice-name">{{ choice.name }} <SoilBadge :soil="choice.soil" /></span>
+          <span class="choice-name">{{ choice.name }} <TraitBadge :types="domain.traits" :value="choice[domain.traitKey]" /></span>
           <span class="choice-latin"><em>{{ choice.latin }}</em></span>
         </button>
+      </div>
+
+      <div v-if="answered && currentDetails.length" class="answer-details">
+        <p v-for="d in currentDetails" :key="d.key" class="detail-line">
+          <strong>{{ d.label }} :</strong> {{ d.value }}
+        </p>
       </div>
 
       <div v-if="answered && !lastCorrect" class="next-container">
@@ -81,7 +93,8 @@ function choiceClass(choice) {
       :correct="correct"
       :total="total"
       :percentage="percentage"
-      :failed-plants="failedPlants"
+      :failed-items="failedItems"
+      :domain="domain"
       :final="true"
       @back="emit('back')"
     />
@@ -164,6 +177,19 @@ function choiceClass(choice) {
 
 .choice-dim {
   opacity: 0.5;
+}
+
+.answer-details {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+}
+
+.detail-line {
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
 }
 
 .next-container {

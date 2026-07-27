@@ -1,10 +1,9 @@
 import { ref, computed } from 'vue'
-import { getPlants } from '../data/plants.js'
 import { shuffle } from '../utils/shuffle.js'
 import { useScore } from './useScore.js'
 
-export function useQuiz(difficulty) {
-  const { correct, total, percentage, failedPlants, record, reset } = useScore()
+export function useQuiz(items) {
+  const { correct, total, percentage, failedItems, record, reset } = useScore()
 
   const pool = ref([])
   const order = ref([])
@@ -14,16 +13,16 @@ export function useQuiz(difficulty) {
   const answered = ref(false)
   const finished = ref(false)
 
-  const currentPlant = computed(() => {
+  const currentItem = computed(() => {
     if (currentIndex.value >= order.value.length) return null
     return order.value[currentIndex.value]
   })
 
-  const plantCount = computed(() => order.value.length)
+  const itemCount = computed(() => order.value.length)
 
   function start() {
     reset()
-    pool.value = getPlants(difficulty)
+    pool.value = items
     order.value = shuffle(pool.value)
     currentIndex.value = 0
     selected.value = null
@@ -34,19 +33,19 @@ export function useQuiz(difficulty) {
 
   function generateChoices() {
     const current = order.value[currentIndex.value]
-    const others = pool.value.filter((p) => p.id !== current.id)
+    const others = pool.value.filter((i) => i.id !== current.id)
     const distractors = shuffle(others).slice(0, 3)
     choices.value = shuffle([current, ...distractors])
   }
 
   const lastCorrect = ref(false)
 
-  function answer(plant) {
+  function answer(item) {
     if (answered.value) return
-    selected.value = plant.id
+    selected.value = item.id
     answered.value = true
-    lastCorrect.value = plant.id === currentPlant.value.id
-    record(lastCorrect.value, currentPlant.value)
+    lastCorrect.value = item.id === currentItem.value.id
+    record(lastCorrect.value, currentItem.value)
   }
 
   function next() {
@@ -64,7 +63,7 @@ export function useQuiz(difficulty) {
     correct,
     total,
     percentage,
-    currentPlant,
+    currentItem,
     currentIndex,
     choices,
     selected,
@@ -74,7 +73,7 @@ export function useQuiz(difficulty) {
     start,
     answer,
     next,
-    failedPlants,
-    plantCount,
+    failedItems,
+    itemCount,
   }
 }

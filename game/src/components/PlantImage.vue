@@ -1,13 +1,17 @@
 <script setup>
 defineProps({
   src: { type: String, required: true },
-  alt: { type: String, default: 'Photo de plante' },
+  alt: { type: String, default: 'Photo' },
+  href: { type: String, default: '' },
 })
 </script>
 
 <template>
   <div class="plant-image-container">
-    <img :src="src" :alt="alt" class="plant-image" />
+    <a v-if="href" :href="href" target="_blank" rel="noopener noreferrer" class="plant-image-link">
+      <img :src="src" :alt="alt" class="plant-image" />
+    </a>
+    <img v-else :src="src" :alt="alt" class="plant-image" />
   </div>
 </template>
 
@@ -21,6 +25,11 @@ defineProps({
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.plant-image-link {
+  display: contents;
+  cursor: pointer;
 }
 
 .plant-image {

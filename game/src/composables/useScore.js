@@ -3,27 +3,27 @@ import { ref, computed } from 'vue'
 export function useScore() {
   const correct = ref(0)
   const total = ref(0)
-  const failedPlants = ref([])
+  const failedItems = ref([])
 
   const percentage = computed(() => {
     if (total.value === 0) return 0
     return Math.round((correct.value / total.value) * 100)
   })
 
-  function record(isCorrect, plant) {
+  function record(isCorrect, item) {
     total.value++
     if (isCorrect) {
       correct.value++
-    } else if (plant) {
-      failedPlants.value.push(plant)
+    } else if (item) {
+      failedItems.value.push(item)
     }
   }
 
   function reset() {
     correct.value = 0
     total.value = 0
-    failedPlants.value = []
+    failedItems.value = []
   }
 
-  return { correct, total, percentage, failedPlants, record, reset }
+  return { correct, total, percentage, failedItems, record, reset }
 }

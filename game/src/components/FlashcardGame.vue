@@ -1,47 +1,53 @@
 <script setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useFlashcard } from '../composables/useFlashcard.js'
+import { getDomain, itemDetails } from '../data/domains.js'
 import ScoreBoard from './ScoreBoard.vue'
-import SoilBadge from './SoilBadge.vue'
+import TraitBadge from './TraitBadge.vue'
 
 const props = defineProps({
+  domain: { type: String, required: true },
   difficulty: { type: String, required: true },
 })
 const emit = defineEmits(['back'])
+
+const domain = getDomain(props.domain)
 
 const {
   correct,
   total,
   percentage,
-  currentPlant,
+  currentItem,
   currentIndex,
   revealed,
   finished,
-  failedPlants,
+  failedItems,
   start,
   reveal,
   evaluate,
-  plantCount,
-} = useFlashcard(props.difficulty)
+  itemCount,
+} = useFlashcard(domain.getItems(props.difficulty))
 
 onMounted(start)
+
+const currentDetails = computed(() => itemDetails(domain, currentItem.value))
 </script>
 
 <template>
   <div class="flashcard-game">
     <header v-if="!finished" class="fc-header">
       <button class="btn-secondary btn-small" @click="emit('back')">Quitter</button>
-      <span class="progress">{{ currentIndex + 1 }} / {{ plantCount }}</span>
+      <span class="progress">{{ currentIndex + 1 }} / {{ itemCount }}</span>
       <ScoreBoard :correct="correct" :total="total" :percentage="percentage" />
     </header>
 
-    <template v-if="!finished && currentPlant">
+    <template v-if="!finished && currentItem">
       <div class="flip-container" @click="!revealed && reveal()">
         <div :class="['flip-card', { flipped: revealed }]">
           <!-- Front: image only -->
           <div class="flip-card-front card">
             <div class="card-image-wrap">
-              <img :src="currentPlant.image" :alt="'Photo de plante'" class="card-image" />
+              <img :src="currentItem.image" :alt="'Photo de plante'" class="card-image" />
             </div>
             <p class="tap-hint">Cliquez pour révéler</p>
           </div>
@@ -49,12 +55,31 @@ onMounted(start)
           <!-- Back: image + name -->
           <div class="flip-card-back card">
             <div class="card-image-wrap">
-              <img :src="currentPlant.image" :alt="currentPlant.name" class="card-image" />
+              <a
+                v-if="revealed && currentItem.source"
+                :href="currentItem.source"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="card-image-link"
+                @click.stop
+              >
+                <img :src="currentItem.image" :alt="currentItem.name" class="card-image" />
+              </a>
+              <img v-else :src="currentItem.image" :alt="currentItem.name" class="card-image" />
             </div>
             <div v-if="revealed" class="card-answer">
-              <p class="plant-name">{{ currentPlant.name }}</p>
-              <p class="plant-latin"><em>{{ currentPlant.latin }}</em></p>
-              <SoilBadge :soil="currentPlant.soil" class="card-soil" />
+              <p class="plant-name">{{ currentItem.name }}</p>
+              <p class="plant-latin"><em>{{ currentItem.latin }}</em></p>
+              <TraitBadge :types="domain.traits" :value="currentItem[domain.traitKey]" class="card-soil" />
+              <div v-if="currentDetails.length" class="card-details">
+                <p
+                  v-for="d in currentDetails"
+                  :key="d.key"
+                  :class="['detail-line', { 'detail-note': d.key === 'note' }]"
+                >
+                  <strong>{{ d.label }} :</strong> {{ d.value }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -71,7 +96,8 @@ onMounted(start)
       :correct="correct"
       :total="total"
       :percentage="percentage"
-      :failed-plants="failedPlants"
+      :failed-items="failedItems"
+      :domain="domain"
       :final="true"
       @back="emit('back')"
     />
@@ -105,6 +131,7 @@ onMounted(start)
 .flip-card {
   position: relative;
   width: 100%;
+  display: grid;
   transition: transform 0.6s;
   transform-style: preserve-3d;
 }
@@ -114,6 +141,7 @@ onMounted(start)
 }
 
 .card {
+  grid-area: 1 / 1;
   backface-visibility: hidden;
   background: var(--color-surface);
   border-radius: var(--radius);
@@ -122,10 +150,6 @@ onMounted(start)
 }
 
 .flip-card-back {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
   transform: rotateY(180deg);
 }
 
@@ -144,6 +168,11 @@ onMounted(start)
   object-fit: contain;
 }
 
+.card-image-link {
+  display: contents;
+  cursor: pointer;
+}
+
 .tap-hint {
   text-align: center;
   padding: 1rem;
@@ -154,6 +183,8 @@ onMounted(start)
 .card-answer {
   text-align: center;
   padding: 1rem;
+  max-height: 260px;
+  overflow-y: auto;
 }
 
 .plant-name {
@@ -170,6 +201,25 @@ onMounted(start)
 
 .card-soil {
   margin-top: 0.4rem;
+}
+
+.card-details {
+  text-align: left;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.detail-line {
+  margin: 0.3rem 0;
+}
+
+.detail-note {
+  background: #fff3cd;
+  color: #7a5c00;
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
 }
 
 .eval-buttons {

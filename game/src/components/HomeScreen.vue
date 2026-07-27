@@ -1,26 +1,44 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { difficulties, getPlants, soilTypes } from '../data/plants.js'
+import { difficulties } from '../data/difficulties.js'
+import { domains, getDomain } from '../data/domains.js'
 
+const props = defineProps({
+  domain: { type: String, default: 'plants' },
+  difficulty: { type: String, default: 'beginner' },
+})
 const emit = defineEmits(['start'])
 
-const selectedDifficulty = ref('beginner')
+const selectedDomainId = ref(props.domain)
+const selectedDifficulty = ref(props.difficulty)
 
-const plantCount = computed(() => getPlants(selectedDifficulty.value).length)
+const domain = computed(() => getDomain(selectedDomainId.value))
+const itemCount = computed(() => domain.value.getItems(selectedDifficulty.value).length)
 const selectedColor = computed(() => {
   const diff = difficulties.find((d) => d.id === selectedDifficulty.value)
   return diff ? diff.color : '#4a7c59'
 })
 
 function play(mode) {
-  emit('start', { mode, difficulty: selectedDifficulty.value })
+  emit('start', { mode, domain: selectedDomainId.value, difficulty: selectedDifficulty.value })
 }
 </script>
 
 <template>
   <div class="home">
-    <h1>Plantes indicatrices</h1>
-    <p class="subtitle">Apprenez à reconnaître les plantes indicatrices de morilles</p>
+    <div class="domain-tabs">
+      <button
+        v-for="d in domains"
+        :key="d.id"
+        :class="['domain-btn', { active: selectedDomainId === d.id }]"
+        @click="selectedDomainId = d.id"
+      >
+        <span class="domain-icon">{{ d.icon }}</span> {{ d.label }}
+      </button>
+    </div>
+
+    <h1>{{ domain.title }}</h1>
+    <p class="subtitle">{{ domain.subtitle }}</p>
 
     <div class="difficulty">
       <p class="section-label">Niveau</p>
@@ -35,11 +53,11 @@ function play(mode) {
           {{ diff.label }}
         </button>
       </div>
-      <p class="plant-count">{{ plantCount }} plantes à découvrir</p>
+      <p class="item-count">{{ domain.countLabel(itemCount) }}</p>
     </div>
 
-    <div class="soil-legend">
-      <span v-for="(info, key) in soilTypes" :key="key" class="legend-item" :title="info.definition">
+    <div class="trait-legend">
+      <span v-for="(info, key) in domain.traits" :key="key" class="legend-item" :title="info.definition">
         <span class="legend-dot" :style="{ background: info.color }"></span>
         {{ info.label }}
       </span>
@@ -79,6 +97,39 @@ h1 {
   font-size: 1.1rem;
 }
 
+.domain-tabs {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.domain-btn {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+}
+
+.domain-btn:hover {
+  opacity: 0.85;
+}
+
+.domain-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.domain-icon {
+  margin-right: 0.2rem;
+}
+
 .section-label {
   font-weight: 600;
   margin-bottom: 0.5rem;
@@ -116,16 +167,16 @@ h1 {
   color: white;
 }
 
-.plant-count {
+.item-count {
   color: var(--color-text-light);
   font-size: 0.9rem;
 }
 
-.soil-legend {
-  display: flex;
+.trait-legend {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
   justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
   margin-bottom: 1.5rem;
   font-size: 0.85rem;
   color: var(--color-text-light);

@@ -1,26 +1,25 @@
 import { ref, computed } from 'vue'
-import { getPlants } from '../data/plants.js'
 import { shuffle } from '../utils/shuffle.js'
 import { useScore } from './useScore.js'
 
-export function useFlashcard(difficulty) {
-  const { correct, total, percentage, failedPlants, record, reset } = useScore()
+export function useFlashcard(items) {
+  const { correct, total, percentage, failedItems, record, reset } = useScore()
 
   const order = ref([])
   const currentIndex = ref(0)
   const revealed = ref(false)
   const finished = ref(false)
 
-  const currentPlant = computed(() => {
+  const currentItem = computed(() => {
     if (currentIndex.value >= order.value.length) return null
     return order.value[currentIndex.value]
   })
 
-  const plantCount = computed(() => order.value.length)
+  const itemCount = computed(() => order.value.length)
 
   function start() {
     reset()
-    order.value = shuffle(getPlants(difficulty))
+    order.value = shuffle(items)
     currentIndex.value = 0
     revealed.value = false
     finished.value = false
@@ -31,7 +30,7 @@ export function useFlashcard(difficulty) {
   }
 
   function evaluate(knew) {
-    record(knew, currentPlant.value)
+    record(knew, currentItem.value)
     revealed.value = false
     currentIndex.value++
     if (currentIndex.value >= order.value.length) {
@@ -43,14 +42,14 @@ export function useFlashcard(difficulty) {
     correct,
     total,
     percentage,
-    currentPlant,
+    currentItem,
     currentIndex,
     revealed,
     finished,
     start,
     reveal,
     evaluate,
-    failedPlants,
-    plantCount,
+    failedItems,
+    itemCount,
   }
 }

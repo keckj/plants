@@ -1,3 +1,5 @@
+import { filterByTier } from './difficulties.js'
+
 export const soilTypes = {
   basique: { label: 'Calcicole', color: '#3498db', definition: 'Pousse sur sol calcaire (basique). Excellent indicateur de morilles !' },
   acide: { label: 'Acidophile', color: '#e74c3c', definition: 'Pousse sur sol acide. Mauvais signe pour les morilles, qui préfèrent le calcaire.' },
@@ -115,15 +117,6 @@ export const plants = [
   { id: 'genevrier', name: 'Genévrier commun', latin: 'Juniperus communis', image: 'images/genevrier.jpg', tier: 'expert', soil: 'ubiquiste' },
 ]
 
-export const difficulties = [
-  { id: 'beginner', label: 'Débutant', color: '#2d8a4e', tiers: ['beginner'] },
-  { id: 'intermediate', label: 'Connaisseur', color: '#f0c800', tiers: ['beginner', 'intermediate'] },
-  { id: 'advanced', label: 'Avancé', color: '#ff8c00', tiers: ['beginner', 'intermediate', 'advanced'] },
-  { id: 'expert', label: 'Expert', color: '#c0392b', tiers: ['beginner', 'intermediate', 'advanced', 'expert'] },
-]
-
 export function getPlants(difficulty) {
-  const diff = difficulties.find((d) => d.id === difficulty)
-  if (!diff) return plants
-  return plants.filter((p) => diff.tiers.includes(p.tier))
+  return filterByTier(plants, difficulty)
 }

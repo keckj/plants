@@ -1,12 +1,14 @@
 <script setup>
-import SoilBadge from './SoilBadge.vue'
+import { getDomain } from '../data/domains.js'
+import TraitBadge from './TraitBadge.vue'
 
 defineProps({
   correct: { type: Number, required: true },
   total: { type: Number, required: true },
   percentage: { type: Number, required: true },
   final: { type: Boolean, default: false },
-  failedPlants: { type: Array, default: () => [] },
+  failedItems: { type: Array, default: () => [] },
+  domain: { type: Object, default: () => getDomain('plants') },
 })
 
 defineEmits(['back'])
@@ -23,22 +25,23 @@ defineEmits(['back'])
       <div class="score-big">{{ correct }} / {{ total }}</div>
       <div class="score-percent">{{ percentage }}% de bonnes réponses</div>
       <div class="score-message">
-        <template v-if="percentage === 100">Parfait ! Vous connaissez toutes les plantes.</template>
+        <template v-if="percentage === 100">{{ domain.perfectMessage }}</template>
         <template v-else-if="percentage >= 75">Très bien ! Encore un peu de pratique.</template>
         <template v-else-if="percentage >= 50">Pas mal ! Continuez à vous entraîner.</template>
         <template v-else>Courage, recommencez pour progresser !</template>
       </div>
-      <div v-if="failedPlants.length > 0" class="failed-section">
-        <h3>Plantes à revoir</h3>
+      <div v-if="failedItems.length > 0" class="failed-section">
+        <h3>{{ domain.reviewTitle }}</h3>
         <div class="failed-list">
-          <div v-for="plant in failedPlants" :key="plant.id" class="failed-item">
+          <div v-for="item in failedItems" :key="item.id" class="failed-item">
             <div class="thumb-wrap">
-              <img :src="plant.image" :alt="plant.name" class="failed-thumb" />
-              <img :src="plant.image" :alt="plant.name" class="failed-preview" />
+              <img :src="item.image" :alt="item.name" class="failed-thumb" />
+              <img :src="item.image" :alt="item.name" class="failed-preview" />
             </div>
             <div class="failed-info">
-              <span class="failed-name">{{ plant.name }} <SoilBadge :soil="plant.soil" /></span>
-              <span class="failed-latin"><em>{{ plant.latin }}</em></span>
+              <span class="failed-name">{{ item.name }} <TraitBadge :types="domain.traits" :value="item[domain.traitKey]" /></span>
+              <span class="failed-latin"><em>{{ item.latin }}</em></span>
+              <span v-if="item.note" class="failed-note">{{ item.note }}</span>
             </div>
           </div>
         </div>
@@ -162,5 +165,11 @@ button {
 .failed-latin {
   font-size: 0.85rem;
   color: var(--color-text-light);
+}
+
+.failed-note {
+  font-size: 0.8rem;
+  color: #7a5c00;
+  margin-top: 0.15rem;
 }
 </style>
