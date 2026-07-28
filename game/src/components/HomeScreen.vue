@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import { difficulties } from '../data/difficulties.js'
 import { domains, getDomain } from '../data/domains.js'
 
@@ -11,6 +11,9 @@ const emit = defineEmits(['start'])
 
 const selectedDomainId = ref(props.domain)
 const selectedDifficulty = ref(props.difficulty)
+
+watch(selectedDomainId, (id) => { document.body.dataset.domain = id }, { immediate: true })
+onUnmounted(() => { delete document.body.dataset.domain })
 
 const domain = computed(() => getDomain(selectedDomainId.value))
 const itemCount = computed(() => domain.value.getItems(selectedDifficulty.value).length)
